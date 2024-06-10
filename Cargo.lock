@@ -21,6 +21,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf4b9d6a944f767f8e5e0db018570623c85f3d925ac718db4e06d0187adb21c1"
 
 [[package]]
+name = "board"
+version = "0.1.0"
+dependencies = [
+ "tetromino",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -210,9 +217,15 @@ checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
 name = "tetris-cli"
 version = "0.1.0"
 dependencies = [
+ "board",
  "crossterm",
  "rand",
+ "tetromino",
 ]
+
+[[package]]
+name = "tetromino"
+version = "0.1.0"
 
 [[package]]
 name = "wasi"
