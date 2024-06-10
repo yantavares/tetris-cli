@@ -1,6 +1,11 @@
-# Tetris CLI
+# CLI Tetris
 
-Play Tetris on your terminal! (Tested on Zsh and Bash in Linux)
+Play Tetris directly on your terminal!
+
+Made entirely in **Rust**.
+
+![Tetris CLI](assets/tetris-cli.gif)
+(Tested on Zsh and Bash in Linux)
 
 ## How to play
 
@@ -27,4 +32,4 @@ cd tetris-cli
 cargo run
 ```
 
-Thank you for playing! 🎮
+Thank you for playing!
