@@ -47,12 +47,18 @@ fn main() {
     let mut stdin = async_stdin().bytes();
 
     let mut fall_timer = Instant::now();
-    let fall_interval = Duration::from_millis(250);
+    let mut fall_time = 300;
+    let mut fall_interval = Duration::from_millis(fall_time);
 
     let mut piece = generate_random_piece();
 
     loop {
         let next_piece = generate_random_piece();
+
+        if board.cleared_lines > 5 {
+            fall_time -= 50;
+            fall_interval = Duration::from_millis(fall_time);
+        }
 
         let mut offset = (0, 4);
 
@@ -114,6 +120,11 @@ fn main() {
                         board.place_piece(&piece, offset);
                     }
 
+                    's' => {
+                        // Place down
+                        fall_interval = Duration::from_millis(10);
+                    }
+
                     'q' => {
                         // Quit the game
                         return;
@@ -122,8 +133,9 @@ fn main() {
                 }
             }
 
-            thread::sleep(Duration::from_millis(50)); // Polling interval for input handling
+            thread::sleep(Duration::from_millis(10)); // Polling interval for input handling
         }
         piece = next_piece;
+        fall_interval = Duration::from_millis(fall_time);
     }
 }
