@@ -33,6 +33,12 @@ fn display_board<W: Write>(board: &Board, stdout: &mut W, piece: &Tetromino) {
     stdout.flush().unwrap();
 }
 
+fn generate_random_piece() -> Tetromino {
+    let mut rng = rand::thread_rng();
+    let n: u16 = rng.gen_range(1..8);
+    Tetromino::new(n)
+}
+
 fn main() {
     let mut board = Board::new(15, 10);
 
@@ -120,10 +126,4 @@ fn main() {
         }
         piece = next_piece;
     }
-}
-
-fn generate_random_piece() -> Tetromino {
-    let mut rng = rand::thread_rng();
-    let n: u16 = rng.gen_range(1..8);
-    Tetromino::new(n)
 }
