@@ -1,9 +1,11 @@
 use board::Board;
 use crossterm::{terminal, ExecutableCommand};
 use rand::Rng;
-use std::io::stdout;
+use std::io::{self, Read, Write};
 use std::thread;
 use std::time::Duration;
+use termion::async_stdin;
+use termion::raw::IntoRawMode;
 use tetromino::Tetromino;
 
 fn update_board(board: &mut Board, piece: &Tetromino, offset: &mut (usize, usize)) -> bool {
@@ -21,6 +23,7 @@ fn update_board(board: &mut Board, piece: &Tetromino, offset: &mut (usize, usize
 
 fn display_board(board: &Board) {
     for row in board.board.iter() {
+        print!("\r");
         for cell in row.iter() {
             print!("{} ", cell);
         }
@@ -31,23 +34,65 @@ fn display_board(board: &Board) {
 fn main() {
     let mut board = Board::new(15, 10);
 
+    let stdout = io::stdout();
+    let mut stdout = stdout.lock().into_raw_mode().unwrap();
+    let mut stdin = async_stdin().bytes();
+
     loop {
-        let piece = generate_random_piece();
+        let mut piece = generate_random_piece();
         let mut offset = (0, 4);
 
         // Place initial piece
         if board.check_collision(&piece, offset) {
-            println!("Game Over!");
+            writeln!(stdout, "\rGame Over!").unwrap();
             break;
         }
         board.place_piece(&piece, offset);
 
         while update_board(&mut board, &piece, &mut offset) {
-            display_board(&board);
-            thread::sleep(Duration::from_millis(100));
-            stdout()
+            stdout
                 .execute(terminal::Clear(terminal::ClearType::All))
                 .unwrap();
+            display_board(&board);
+
+            // Handle user input
+            if let Some(Ok(b)) = stdin.next() {
+                let key = b as char;
+                match key {
+                    'a' => {
+                        // Move left
+                        board.clear_piece(&piece, offset);
+                        if offset.1 > 0 {
+                            offset.1 -= 1;
+                        }
+                        if board.check_collision(&piece, offset) {
+                            offset.1 += 1;
+                        }
+                        board.place_piece(&piece, offset);
+                    }
+                    'd' => {
+                        // Move right
+                        board.clear_piece(&piece, offset);
+                        offset.1 += 1;
+                        if board.check_collision(&piece, offset) {
+                            offset.1 -= 1;
+                        }
+                        board.place_piece(&piece, offset);
+                    }
+                    'l' => {
+                        // Rotate
+                        board.clear_piece(&piece, offset);
+                        let rotated_piece = piece.rotate();
+                        if !board.check_collision(&rotated_piece, offset) {
+                            piece = rotated_piece;
+                        }
+                        board.place_piece(&piece, offset);
+                    }
+                    _ => {}
+                }
+            }
+
+            thread::sleep(Duration::from_millis(100));
         }
     }
 }
