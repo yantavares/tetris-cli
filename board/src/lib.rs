@@ -23,7 +23,7 @@ impl Board {
             let new_x = (x + offset.0 as isize) as usize;
             let new_y = (y + offset.1 as isize) as usize;
             if new_x < self.lines && new_y < self.cols {
-                self.board[new_x][new_y] = '=';
+                self.board[new_x][new_y] = '#';
             }
         }
     }
@@ -42,7 +42,7 @@ impl Board {
         for &(x, y) in piece.coords() {
             let new_x = (x + offset.0 as isize) as usize;
             let new_y = (y + offset.1 as isize) as usize;
-            if new_x >= self.lines || new_y >= self.cols || self.board[new_x][new_y] == '=' {
+            if new_x >= self.lines || new_y >= self.cols || self.board[new_x][new_y] == '#' {
                 return true;
             }
         }
