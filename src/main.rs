@@ -3,7 +3,7 @@ use crossterm::{terminal, ExecutableCommand};
 use rand::Rng;
 use std::io::{self, Read, Write};
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use termion::async_stdin;
 use termion::raw::IntoRawMode;
 use tetromino::Tetromino;
@@ -21,14 +21,15 @@ fn update_board(board: &mut Board, piece: &Tetromino, offset: &mut (usize, usize
     true
 }
 
-fn display_board(board: &Board) {
+fn display_board<W: Write>(board: &Board, stdout: &mut W) {
     for row in board.board.iter() {
-        print!("\r");
+        write!(stdout, "\r").unwrap();
         for cell in row.iter() {
-            print!("{} ", cell);
+            write!(stdout, "{} ", cell).unwrap();
         }
-        println!();
+        writeln!(stdout).unwrap();
     }
+    stdout.flush().unwrap();
 }
 
 fn main() {
@@ -37,6 +38,9 @@ fn main() {
     let stdout = io::stdout();
     let mut stdout = stdout.lock().into_raw_mode().unwrap();
     let mut stdin = async_stdin().bytes();
+
+    let mut fall_timer = Instant::now();
+    let fall_interval = Duration::from_millis(500); // Adjust fall speed here
 
     loop {
         let mut piece = generate_random_piece();
@@ -49,11 +53,16 @@ fn main() {
         }
         board.place_piece(&piece, offset);
 
-        while update_board(&mut board, &piece, &mut offset) {
-            stdout
-                .execute(terminal::Clear(terminal::ClearType::All))
-                .unwrap();
-            display_board(&board);
+        let mut running = true;
+        while running {
+            if fall_timer.elapsed() >= fall_interval {
+                fall_timer = Instant::now();
+                running = update_board(&mut board, &piece, &mut offset);
+                stdout
+                    .execute(terminal::Clear(terminal::ClearType::All))
+                    .unwrap();
+                display_board(&board, &mut stdout);
+            }
 
             // Handle user input
             if let Some(Ok(b)) = stdin.next() {
@@ -88,11 +97,16 @@ fn main() {
                         }
                         board.place_piece(&piece, offset);
                     }
+
+                    'q' => {
+                        // Quit the game
+                        break;
+                    }
                     _ => {}
                 }
             }
 
-            thread::sleep(Duration::from_millis(100));
+            thread::sleep(Duration::from_millis(50)); // Polling interval for input handling
         }
     }
 }
