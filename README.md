@@ -5,6 +5,7 @@ Play Tetris directly on your terminal!
 Made entirely in **Rust**.
 
 ![Tetris CLI](assets/tetris-cli.gif)
+
 (Tested on Zsh and Bash in Linux)
 
 ## How to play
