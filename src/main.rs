@@ -64,6 +64,9 @@ fn main() {
 
         // Place initial piece
         if board.check_collision(&piece, offset) {
+            // Exit raw mode before printing "Game Over"
+            drop(stdout);
+            let mut stdout = io::stdout();
             writeln!(stdout, "\rGame Over!").unwrap();
             println!("\rCleared Lines: {}", board.cleared_lines);
             break;
