@@ -1,6 +1,6 @@
-# CLI Tetris
+# Tetris CLI
 
-Play Tetris directly on your terminal!
+Play a Tetris clone directly on your terminal!
 
 Made entirely in **Rust**.
 
