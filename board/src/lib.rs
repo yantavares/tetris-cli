@@ -1,8 +1,8 @@
 use tetromino::Tetromino;
 pub struct Board {
     pub board: Vec<Vec<char>>,
-    lines: usize,
-    cols: usize,
+    pub lines: usize,
+    pub cols: usize,
 }
 
 impl Board {
