@@ -1,20 +1,27 @@
 use tetromino::Tetromino;
+
 pub struct Board {
     pub board: Vec<Vec<char>>,
     pub lines: usize,
     pub cols: usize,
+    pub cleared_lines: usize,
 }
 
 impl Board {
     pub fn new(lines: usize, cols: usize) -> Board {
-        let board = vec![vec!['.'; cols as usize]; lines as usize];
-        Board { board, lines, cols }
+        let board = vec![vec!['.'; cols]; lines];
+        Board {
+            board,
+            lines,
+            cols,
+            cleared_lines: 0,
+        }
     }
 
     pub fn place_piece(&mut self, piece: &Tetromino, offset: (usize, usize)) {
         for &(x, y) in piece.coords() {
-            let new_x = x + offset.0;
-            let new_y = y + offset.1;
+            let new_x = (x + offset.0 as isize) as usize;
+            let new_y = (y + offset.1 as isize) as usize;
             if new_x < self.lines && new_y < self.cols {
                 self.board[new_x][new_y] = '=';
             }
@@ -23,8 +30,8 @@ impl Board {
 
     pub fn clear_piece(&mut self, piece: &Tetromino, offset: (usize, usize)) {
         for &(x, y) in piece.coords() {
-            let new_x = x + offset.0;
-            let new_y = y + offset.1;
+            let new_x = (x + offset.0 as isize) as usize;
+            let new_y = (y + offset.1 as isize) as usize;
             if new_x < self.lines && new_y < self.cols {
                 self.board[new_x][new_y] = '.';
             }
@@ -33,8 +40,8 @@ impl Board {
 
     pub fn check_collision(&self, piece: &Tetromino, offset: (usize, usize)) -> bool {
         for &(x, y) in piece.coords() {
-            let new_x = x + offset.0;
-            let new_y = y + offset.1;
+            let new_x = (x + offset.0 as isize) as usize;
+            let new_y = (y + offset.1 as isize) as usize;
             if new_x >= self.lines || new_y >= self.cols || self.board[new_x][new_y] == '=' {
                 return true;
             }
@@ -47,9 +54,13 @@ impl Board {
     }
 
     pub fn remove_filled_lines(&mut self) {
-        self.board.retain(|row| row.contains(&'.'));
-        while self.board.len() < self.lines {
-            self.board.insert(0, vec!['.'; self.cols]);
+        let mut new_board = self.board.clone();
+        new_board.retain(|row| row.contains(&'.'));
+        let cleared_lines = self.lines - new_board.len();
+        self.cleared_lines += cleared_lines;
+        while new_board.len() < self.lines {
+            new_board.insert(0, vec!['.'; self.cols]);
         }
+        self.board = new_board;
     }
 }

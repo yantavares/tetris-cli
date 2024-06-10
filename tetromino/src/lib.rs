@@ -1,12 +1,12 @@
 #[derive(Debug, Clone)]
 pub enum Tetromino {
-    LPiece(Vec<(usize, usize)>),
-    JPiece(Vec<(usize, usize)>),
-    TPiece(Vec<(usize, usize)>),
-    SPiece(Vec<(usize, usize)>),
-    ZPiece(Vec<(usize, usize)>),
-    IPiece(Vec<(usize, usize)>),
-    OPiece(Vec<(usize, usize)>),
+    LPiece(Vec<(isize, isize)>),
+    JPiece(Vec<(isize, isize)>),
+    TPiece(Vec<(isize, isize)>),
+    SPiece(Vec<(isize, isize)>),
+    ZPiece(Vec<(isize, isize)>),
+    IPiece(Vec<(isize, isize)>),
+    OPiece(Vec<(isize, isize)>),
 }
 
 impl Tetromino {
@@ -23,19 +23,19 @@ impl Tetromino {
         }
     }
 
-    pub fn contains(&self, position: (usize, usize)) -> bool {
+    pub fn get_type(&self) -> &str {
         match self {
-            Tetromino::LPiece(coords)
-            | Tetromino::JPiece(coords)
-            | Tetromino::TPiece(coords)
-            | Tetromino::SPiece(coords)
-            | Tetromino::ZPiece(coords)
-            | Tetromino::IPiece(coords)
-            | Tetromino::OPiece(coords) => coords.contains(&position),
+            Tetromino::LPiece(_) => "L",
+            Tetromino::JPiece(_) => "J",
+            Tetromino::TPiece(_) => "T",
+            Tetromino::SPiece(_) => "S",
+            Tetromino::ZPiece(_) => "Z",
+            Tetromino::IPiece(_) => "I",
+            Tetromino::OPiece(_) => "O",
         }
     }
 
-    pub fn coords(&self) -> &Vec<(usize, usize)> {
+    pub fn coords(&self) -> &Vec<(isize, isize)> {
         match self {
             Tetromino::LPiece(coords)
             | Tetromino::JPiece(coords)
@@ -47,23 +47,39 @@ impl Tetromino {
         }
     }
 
-    pub fn rotate(&self) -> Tetromino {
+    pub fn rotate_right(&self) -> Tetromino {
         match self {
-            Tetromino::LPiece(coords) => Tetromino::LPiece(rotate_coords(coords)),
-            Tetromino::JPiece(coords) => Tetromino::JPiece(rotate_coords(coords)),
-            Tetromino::TPiece(coords) => Tetromino::TPiece(rotate_coords(coords)),
-            Tetromino::SPiece(coords) => Tetromino::SPiece(rotate_coords(coords)),
-            Tetromino::ZPiece(coords) => Tetromino::ZPiece(rotate_coords(coords)),
-            Tetromino::IPiece(coords) => Tetromino::IPiece(rotate_coords(coords)),
+            Tetromino::LPiece(coords) => Tetromino::LPiece(rotate_coords(coords, true)),
+            Tetromino::JPiece(coords) => Tetromino::JPiece(rotate_coords(coords, true)),
+            Tetromino::TPiece(coords) => Tetromino::TPiece(rotate_coords(coords, true)),
+            Tetromino::SPiece(coords) => Tetromino::SPiece(rotate_coords(coords, true)),
+            Tetromino::ZPiece(coords) => Tetromino::ZPiece(rotate_coords(coords, true)),
+            Tetromino::IPiece(coords) => Tetromino::IPiece(rotate_coords(coords, true)),
+            Tetromino::OPiece(coords) => Tetromino::OPiece(coords.clone()), // O-piece does not change on rotation
+        }
+    }
+
+    pub fn rotate_left(&self) -> Tetromino {
+        match self {
+            Tetromino::LPiece(coords) => Tetromino::LPiece(rotate_coords(coords, false)),
+            Tetromino::JPiece(coords) => Tetromino::JPiece(rotate_coords(coords, false)),
+            Tetromino::TPiece(coords) => Tetromino::TPiece(rotate_coords(coords, false)),
+            Tetromino::SPiece(coords) => Tetromino::SPiece(rotate_coords(coords, false)),
+            Tetromino::ZPiece(coords) => Tetromino::ZPiece(rotate_coords(coords, false)),
+            Tetromino::IPiece(coords) => Tetromino::IPiece(rotate_coords(coords, false)),
             Tetromino::OPiece(coords) => Tetromino::OPiece(coords.clone()), // O-piece does not change on rotation
         }
     }
 }
 
-fn rotate_coords(coords: &Vec<(usize, usize)>) -> Vec<(usize, usize)> {
+fn rotate_coords(coords: &Vec<(isize, isize)>, clockwise: bool) -> Vec<(isize, isize)> {
     let mut new_coords = vec![(0, 0); coords.len()];
     for (i, &(x, y)) in coords.iter().enumerate() {
-        new_coords[i] = (y, 3 - x); // Rotate 90 degrees clockwise
+        new_coords[i] = if clockwise {
+            (y, -x) // Rotate 90 degrees clockwise
+        } else {
+            (-y, x) // Rotate 90 degrees counterclockwise
+        };
     }
     new_coords
 }

@@ -21,7 +21,8 @@ fn update_board(board: &mut Board, piece: &Tetromino, offset: &mut (usize, usize
     true
 }
 
-fn display_board<W: Write>(board: &Board, stdout: &mut W) {
+fn display_board<W: Write>(board: &Board, stdout: &mut W, piece: &Tetromino) {
+    writeln!(stdout, "\rNext piece {}", piece.get_type()).unwrap();
     for row in board.board.iter() {
         write!(stdout, "\r").unwrap();
         for cell in row.iter() {
@@ -40,15 +41,19 @@ fn main() {
     let mut stdin = async_stdin().bytes();
 
     let mut fall_timer = Instant::now();
-    let fall_interval = Duration::from_millis(500); // Adjust fall speed here
+    let fall_interval = Duration::from_millis(250);
+
+    let mut piece = generate_random_piece();
 
     loop {
-        let mut piece = generate_random_piece();
+        let next_piece = generate_random_piece();
+
         let mut offset = (0, 4);
 
         // Place initial piece
         if board.check_collision(&piece, offset) {
             writeln!(stdout, "\rGame Over!").unwrap();
+            println!("\rCleared Lines: {}", board.cleared_lines);
             break;
         }
         board.place_piece(&piece, offset);
@@ -61,7 +66,7 @@ fn main() {
                 stdout
                     .execute(terminal::Clear(terminal::ClearType::All))
                     .unwrap();
-                display_board(&board, &mut stdout);
+                display_board(&board, &mut stdout, &next_piece);
             }
 
             // Handle user input
@@ -91,16 +96,21 @@ fn main() {
                     'l' => {
                         // Rotate
                         board.clear_piece(&piece, offset);
-                        let rotated_piece = piece.rotate();
-                        if !board.check_collision(&rotated_piece, offset) {
-                            piece = rotated_piece;
+                        let rotated_piece_right = piece.rotate_right();
+                        if !board.check_collision(&rotated_piece_right, offset) {
+                            piece = rotated_piece_right;
+                        } else {
+                            let rotated_piece_left = piece.rotate_left();
+                            if !board.check_collision(&rotated_piece_left, offset) {
+                                piece = rotated_piece_left;
+                            }
                         }
                         board.place_piece(&piece, offset);
                     }
 
                     'q' => {
                         // Quit the game
-                        break;
+                        return;
                     }
                     _ => {}
                 }
@@ -108,6 +118,7 @@ fn main() {
 
             thread::sleep(Duration::from_millis(50)); // Polling interval for input handling
         }
+        piece = next_piece;
     }
 }
 
