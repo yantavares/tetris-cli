@@ -20,7 +20,7 @@ Made entirely in **Rust**.
 
 ### Option 1 - Using the binary
 
-1. Download the binary from the [releases page](https://github.com/yantavares/tetris-cli/releases/new)
+1. Download the binary from the [releases page](https://github.com/yantavares/tetris-cli/releases)
 
 OR
 
