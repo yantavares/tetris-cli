@@ -18,6 +18,29 @@ Made entirely in **Rust**.
 
 ## Setup
 
+### Option 1 - Using the binary
+
+1. Download the binary from the [releases page](https://github.com/yantavares/tetris-cli/releases/new)
+
+OR
+
+1. Clone the repository and enter the directory
+
+```bash
+git clone https://github.com/yantavares/tetris-cli.git
+cd tetris-cli/bin
+```
+
+2. Run the game
+
+```bash
+chomd +x tetris-cli
+
+./tetris-cli
+```
+
+### Option 2 - Using Cargo
+
 0. Install Rust and Cargo
 
 1. Clone the repository and enter the directory
