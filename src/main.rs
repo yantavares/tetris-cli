@@ -52,12 +52,15 @@ fn main() {
 
     let mut piece = generate_random_piece();
 
+    let mut last_speed_up_line_count = 0;
+
     loop {
         let next_piece = generate_random_piece();
 
-        if board.cleared_lines > 5 {
+        if board.cleared_lines % 5 == 0 && board.cleared_lines != last_speed_up_line_count && fall_time > 50 {
             fall_time -= 50;
             fall_interval = Duration::from_millis(fall_time);
+            last_speed_up_line_count = board.cleared_lines;
         }
 
         let mut offset = (0, 4);
