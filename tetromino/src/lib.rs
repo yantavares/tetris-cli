@@ -55,7 +55,7 @@ impl Tetromino {
             Tetromino::SPiece(coords) => Tetromino::SPiece(rotate_coords(coords, true)),
             Tetromino::ZPiece(coords) => Tetromino::ZPiece(rotate_coords(coords, true)),
             Tetromino::IPiece(coords) => Tetromino::IPiece(rotate_coords(coords, true)),
-            Tetromino::OPiece(coords) => Tetromino::OPiece(coords.clone()), // O-piece does not change on rotation
+            Tetromino::OPiece(coords) => Tetromino::OPiece(coords.clone()),
         }
     }
 
@@ -67,7 +67,7 @@ impl Tetromino {
             Tetromino::SPiece(coords) => Tetromino::SPiece(rotate_coords(coords, false)),
             Tetromino::ZPiece(coords) => Tetromino::ZPiece(rotate_coords(coords, false)),
             Tetromino::IPiece(coords) => Tetromino::IPiece(rotate_coords(coords, false)),
-            Tetromino::OPiece(coords) => Tetromino::OPiece(coords.clone()), // O-piece does not change on rotation
+            Tetromino::OPiece(coords) => Tetromino::OPiece(coords.clone()),
         }
     }
 }
@@ -75,11 +75,7 @@ impl Tetromino {
 fn rotate_coords(coords: &Vec<(isize, isize)>, clockwise: bool) -> Vec<(isize, isize)> {
     let mut new_coords = vec![(0, 0); coords.len()];
     for (i, &(x, y)) in coords.iter().enumerate() {
-        new_coords[i] = if clockwise {
-            (y, -x) // Rotate 90 degrees clockwise
-        } else {
-            (-y, x) // Rotate 90 degrees counterclockwise
-        };
+        new_coords[i] = if clockwise { (y, -x) } else { (-y, x) };
     }
     new_coords
 }

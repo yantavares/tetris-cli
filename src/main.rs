@@ -57,7 +57,10 @@ fn main() {
     loop {
         let next_piece = generate_random_piece();
 
-        if board.cleared_lines % 5 == 0 && board.cleared_lines != last_speed_up_line_count && fall_time > 50 {
+        if board.cleared_lines % 5 == 0
+            && board.cleared_lines != last_speed_up_line_count
+            && fall_time > 50
+        {
             fall_time -= 50;
             fall_interval = Duration::from_millis(fall_time);
             last_speed_up_line_count = board.cleared_lines;
@@ -65,9 +68,7 @@ fn main() {
 
         let mut offset = (0, 4);
 
-        // Place initial piece
         if board.check_collision(&piece, offset) {
-            // Exit raw mode before printing "Game Over"
             drop(stdout);
             let mut stdout = io::stdout();
             writeln!(stdout, "\rGame Over!").unwrap();
@@ -87,7 +88,6 @@ fn main() {
                 display_board(&board, &mut stdout, &next_piece);
             }
 
-            // Handle user input
             if let Some(Ok(b)) = stdin.next() {
                 let key = b as char;
                 match key {
@@ -139,7 +139,7 @@ fn main() {
                 }
             }
 
-            thread::sleep(Duration::from_millis(10)); // Polling interval for input handling
+            thread::sleep(Duration::from_millis(10));
         }
         piece = next_piece;
         fall_interval = Duration::from_millis(fall_time);
